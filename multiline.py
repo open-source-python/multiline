@@ -8,46 +8,71 @@ import json
 import re
 
 
-def remove_new_line_occurence(matched_string):
-    return matched_string.group(1)+re.sub(r'\n', r'\\n', 
-    matched_string.group(2))+matched_string.group(3)
+def replace_new_line(matched_string):
+    print(matched_string.group(1), matched_string.group(2), matched_string.group(3))
+    if matched_string:
+        return matched_string.group(1)+re.sub(r'\n', r'\\n', 
+                matched_string.group(2))+matched_string.group(3)
+    else:
+        return matched_string
 
 
-def convert_multiline_to_singleline(multiline_string):
+def custom_parser(multiline_string):
     if isinstance(multiline_string, (bytes, bytearray)):
         multiline_string = multiline_string.decode()
-    return re.sub(r'(:\s*(?:"|\'))(.*)((?<!\\)(?:"|\'))', remove_new_line_occurence, 
+    return re.sub(r'(:\s*")(.*?)((?<!\\)")', replace_new_line, 
     multiline_string, flags=re.DOTALL)
 
 
+def convert_multiline_to_singleline_dec(actual_fn):
+    def wrapper_fn(input_json, *args, **kwargs):
+
+        # For load fn, expected parameter is file pointer
+        if actual_fn.__name__ == 'load':
+            input_json = input_json.read()
+
+        # print(f"Input_json:{input_json}")
+
+        if isinstance(input_json, str):
+            if input_json.startswith('\ufeff'):
+                raise JSONDecodeError("Unexpected UTF-8 BOM (decode using utf-8-sig)",
+                                    input_json, 0)
+        else:
+            if not isinstance(input_json, (bytes, bytearray)):
+                raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+                                f'not {input_json.__class__.__name__}')
+
+        # Parse the json only if multline line values are present
+        if kwargs.get('multiline', False):
+            kwargs.pop('multiline')
+            return json.loads(custom_parser(input_json), *args, **kwargs)
+        # Using the input json as it is
+        else:
+            return json.loads(input_json, *args, **kwargs)
+        
+    return wrapper_fn
+
+
+@convert_multiline_to_singleline_dec
 def loads(s, *args, **kwargs):
-    if isinstance(s, str):
-        if s.startswith('\ufeff'):
-            raise JSONDecodeError("Unexpected UTF-8 BOM (decode using utf-8-sig)",
-                                  s, 0)
-    else:
-        if not isinstance(s, (bytes, bytearray)):
-            raise TypeError(f'the JSON object must be str, bytes or bytearray, '
-                            f'not {s.__class__.__name__}')
+    pass
 
-    if kwargs.get('multiline', False):
-        s = convert_multiline_to_singleline(s)
-        kwargs.pop('multiline')
-    return json.loads(s, *args, **kwargs)
-
-
+@convert_multiline_to_singleline_dec
 def load(fp, *args, **kwargs):
     pass
 
 
 # TEST
-print(loads(bytearray("""{"a": "ssssss
-sd\\"mskds","b": "Ssss","c": "sdjs
-ndjasn
-djasn"}""", 'utf-8'), multiline=True))
+# print(loads(bytearray("""{"a": "ssssss
+# sd\\"mskds","b": "Ssss","c": "sdjs
+# ndjasn
+# djasn"}""", 'utf-8'), multiline=True))
 
 # TEST
-# z = re.sub(r'f(\n)', r'\\n', z, re.DOTALL)
-# print(z)
-# with open('multilinejson-env/test.json', 'r') as f:
-#     print(json.load(f))
+with open('multilinejson-env/test.json', 'r') as f:
+    print(load(f, multiline=True))
+
+# print(re.findall(r'(:\s*(?:"|\'))(.*?)((?<!\\)(?:"|\'))', z, 
+#     flags=re.DOTALL))
+
+
