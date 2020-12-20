@@ -31,8 +31,6 @@ def convert_multiline_to_singleline_dec(actual_fn):
         if actual_fn.__name__ == 'load':
             input_json = input_json.read()
 
-        # print(f"Input_json:{input_json}")
-
         if isinstance(input_json, str):
             if input_json.startswith('\ufeff'):
                 raise JSONDecodeError("Unexpected UTF-8 BOM (decode using utf-8-sig)",
@@ -45,7 +43,6 @@ def convert_multiline_to_singleline_dec(actual_fn):
         # Parse the json only if multline line values are present
         if kwargs.get('multiline', False):
             kwargs.pop('multiline')
-            print('dcdcdccd',custom_parser(input_json))
             return json.loads(custom_parser(input_json), *args, **kwargs)
         # Using the input json as it is
         else:
@@ -70,16 +67,5 @@ def dump(obj, fp, *args, **kwargs):
 
 def dumps(obj, *args, **kwargs):
     return json.dumps(obj, *args, **kwargs)
-
-
-# TEST
-# print(loads(bytearray("""{"a": "ssssss
-# sd\\"mskds","b": "Ssss","c": "sdjs
-# ndjasn
-# djasn"}""", 'utf-8'), multiline=True))
-
-# TEST
-with open('multilinejson-env/test.json', 'r') as f:
-    print(load(f, multiline=True))
 
 
