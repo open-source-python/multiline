@@ -1,0 +1,23 @@
+{
+    "key1": {
+        "subkey": ["'quoted
+        vaue'", "lorem dipsum
+        lorem \"dipsum
+        lorem dipsum", "lorem dipsum line 1
+        lorem dipsum line 2"]
+    },
+    "key2": {
+        "subkey": {
+            "subsubkey1": {
+                "subsubsubkey1": "lorem dipsum line1
+                lorem dipsum line2
+                lorem dipsum line 3"
+            },
+            "subsubkey2": {
+                "subsubsubkey1": "lorem dipsum\n line1
+                lorem dipsum line2
+                lorem dipsum line 3"
+            }
+        }
+    }
+}

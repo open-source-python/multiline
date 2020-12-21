@@ -67,5 +67,3 @@ def dump(obj, fp, *args, **kwargs):
 
 def dumps(obj, *args, **kwargs):
     return json.dumps(obj, *args, **kwargs)
-
-
