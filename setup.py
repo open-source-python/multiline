@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="multiline",
-    version="1.0.1",
+    version="1.0.2",
     author="Sanket Tantia",
     author_email="tantiasanket@gmail.com",
     description="A package to read multline json values",
