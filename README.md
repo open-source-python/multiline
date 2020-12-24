@@ -1,7 +1,7 @@
 # multiline
-Open source python module, which can parse multiline values in json files and provide it as an input to the internal json module.
+Open source python module, which can parse multiline values in json files.
 
-This module provides a wrapper on top of the four methods (load, loads, dump, dumps) presnet in the default json module. This is done to avoid the need of importing both modules `multiline` and `json`. 
+This module provides a wrapper on top of the four methods (load, loads, dump, dumps) present in the default json module. This is done to avoid the need of importing both modules `multiline` and `json`. 
 
 If multline parsing is required while loading the json, then an additional argument ```multiline=True``` needs to be provided to trigger the custom parser.
 
@@ -31,3 +31,5 @@ While reading a json file to dictionary object:
 with open('tests/test.json', 'r') as fp:
     input_dic = multiline.load(fp, multiline=True)
 ```
+
+Additional information about the package can be found at: https://sankettantia.medium.com/multiline-a-python-package-for-multi-line-json-values-c4f7a76f0305
